@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Profile</title>
+    <style>
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes typing {
+            from { width: 0; }
+            to { width: 100%; }
+        }
+        
+        @keyframes buttonClick {
+            0% { transform: scale(1); }
+            50% { transform: scale(0.95); }
+            100% { transform: scale(1); }
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f6f9;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            animation: fadeIn 1s ease-in-out;
+        }
+        .container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            width: 400px;
+            animation: fadeIn 1s ease-in-out;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            font-size: 28px;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+        }
+        textarea {
+            width: 100%;
+            height: 120px;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            background-color: #f9f9f9;
+            font-size: 16px;
+            resize: none;
+            transition: border-color 0.3s ease;
+            overflow: hidden;
+            white-space: nowrap;
+            animation: typing 3s steps(40, end) 1 alternate;
+        }
+        textarea:focus {
+            border-color: #5c6bc0;
+            outline: none;
+        }
+        .file-input-container {
+            text-align: center;
+            margin-bottom: 20px;
+            border: 2px dashed #5c6bc0;
+            padding: 20px;
+            border-radius: 10px;
+            background-color: #f9f9f9;
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+        }
+        .file-input-container:hover {
+            background-color: #e8eaf6;
+            border-color: #3f4a84;
+        }
+        .file-preview img {
+            border-radius: 50%;
+            max-width: 100px;
+            height: auto;
+            opacity: 0;
+            animation: fadeIn 1s ease-in-out forwards;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #5c6bc0;
+            color: white;
+            font-size: 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: background-color 0.3s ease;
+        }
+        button:active {
+            animation: buttonClick 0.3s ease;
+        }
+        button:hover {
+            background-color: #3f4a84;
+        }
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            color: #5c6bc0;
+            text-decoration: none;
+            font-size: 14px;
+        }
+        .back-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Edit Profile</h1>
+        <form method="POST" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="bio">Bio</label>
+                <textarea id="bio" name="bio" placeholder="Write something about yourself..."></textarea>
+            </div>
+            <div class="form-group file-input-container">
+                <label for="avatar">Drag & Drop Your Avatar Here</label>
+                <input type="file" id="avatar" name="avatar" accept="image/*" hidden>
+                <div class="file-preview">
+                    <img src="" alt="Current Avatar" id="avatar-preview">
+                </div>
+            </div>
+            <div class="form-group">
+                <button type="submit">Save Changes</button>
+            </div>
+        </form>
+        <a href="prfle.html" class="back-link">Back to Profile</a>
+    </div>
+    <script>
+        document.getElementById('avatar').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const imgElement = document.getElementById('avatar-preview');
+                    imgElement.src = e.target.result;
+                    imgElement.style.opacity = '1';
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    </script>
+</body>
+</html>

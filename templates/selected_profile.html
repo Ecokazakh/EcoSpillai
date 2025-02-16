@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EcoSocial - Profile</title>
+    
+    <!-- Bootstrap & Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+
+    <style>
+        :root {
+            --primary-color: #5649ed72;
+            --secondary-color: #7a6effef;
+        }
+
+        body {
+            background: #f8f9fa;
+        }
+
+        .profile-header {
+            background: var(--primary-color);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .profile-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 4px solid white;
+        }
+
+        .subscribe-btn {
+            background: var(--secondary-color);
+            transition: 0.3s ease;
+        }
+
+        .subscribe-btn:hover {
+            background: #e74c3c !important;
+        }
+
+        .post-card {
+            transition: 0.3s ease-in-out;
+            border: none;
+            border-radius: 10px;
+        }
+
+        .post-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .animate-on-scroll {
+            opacity: 0;
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+
+        .fade-in {
+            opacity: 1 !important;
+            transform: translateY(0) !important;
+        }
+    </style>
+</head>
+<button onclick="window.location.href='base.html';" style="font-size: 24px; left: 0; background-color: transparent; border: none; cursor: pointer; color: #5649ed; padding: 10px;">
+    &#10094;
+</button>
+<div id="popup" class="position-fixed top-50 start-50 translate-middle bg-white p-3 shadow rounded d-none" style="width: 300px; max-height: 400px; overflow-y: auto;">
+    <h5 id="popupTitle"></h5>
+    <ul id="popupList" class="list-unstyled"></ul>
+    <button class="btn btn-secondary w-100 mt-2" onclick="closePopup()">Close</button>
+</div>
+<body class="d-flex flex-column min-vh-100">
+    <!-- Profile Header -->
+    <div class="container mt-4">
+        <div class="profile-header shadow">
+            <img id="profileAvatar" src="{{ user.avatar }}" class="profile-avatar">
+            <h2 id="profileUsername">Downloading...</h2>
+            <p id="profileBio">Downloading...</p>
+
+            <div id="followStats" class="d-flex justify-content-around my-3">
+                <div>
+                    <h5 id="followers" class="text-primary" style="cursor: pointer;" onclick="showFollowers()">Followers:</h5><h5 id="followersCount">0</h5>
+                </div>
+                <div>
+                    <h5 id="followed" class="text-primary" style="cursor: pointer;" onclick="showFollowed()">Followed:</h5><h5 id="followedCount">0</h5>
+                </div>
+            </div>
+            </div>
+
+            <button id="subscribeBtn" class="btn subscribe-btn text-white">Downloading...</button>
+            <button class="btn btn-light" onclick="openChat()"><i class="fas fa-comment-dots"></i>Message</button>
+        </div>
+    </div>
+
+    <!-- User Posts -->
+    <div class="container my-4">
+        <h4 class="text-center mb-3">Posts of user</h4>
+        <div id="userPosts">
+            <!-- Here posts will be loaded -->
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            // Get user ID from URL path (for profile pages)
+            const pathSegments = window.location.pathname.split('/');
+            const userId = pathSegments[pathSegments.length - 1];
+            
+            loadProfile(userId);
+            loadPosts(userId);
+            showFollowers();
+            showFollowed();
+        });
+
+        function loadProfile(userId) {
+            fetch(`/get_user_info/${userId}`)
+                .then(res => res.json())
+                .then(data => {
+                    document.getElementById("profileAvatar").src = data.avatar || "static/avatars/1024px-Logo_NIS";
+                    document.getElementById("profileUsername").innerText = data.email;
+                    document.getElementById("profileBio").innerText = data.bio || "This user has not shared anything about themselves yet.";
+                    updateSubscribeButton(userId, data.followers);
+                });
+        }
+
+        function updateSubscribeButton(userId, followersCount) {
+    const btn = document.getElementById("subscribeBtn");
+    fetch(`/followers/${userId}`)
+        .then(res => res.json())
+        .then(data => {
+            const isFollowing = data.isFollowing;
+            btn.innerText = isFollowing ? "Unfollow" : "Follow";
+            btn.classList.toggle("btn-danger", isFollowing);
+            btn.classList.toggle("btn-success", !isFollowing);
+            btn.onclick = () => toggleSubscribe(userId, isFollowing);
+        });
+}
+
+function toggleSubscribe(userId, isFollowing) {
+    const endpoint = isFollowing ? `/unfollow/${userId}` : `/follow/${userId}`;
+    fetch(endpoint, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        credentials: 'include'
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            loadProfile(userId); 
+        } else {
+            alert(data.message); 
+        }
+    });
+}
+
+
+        function loadUserPosts(userId) {
+    fetch(`/get_user_posts/${userId}`)
+        .then(response => response.json())
+        .then(posts => {
+            if (posts.length === 0) {
+                document.getElementById("userPosts").innerHTML = "<p>No posts available</p>";
+            } else {
+                let html = '';
+                posts.forEach(post => {
+                    html += `
+                        <div class="card post-card p-3 my-3" id="post-${post.id}">
+                            <div class="d-flex align-items-center">
+                                <img src="${post.avatar}" class="avatar" alt="${post.username}">
+                                <h5 class="ms-2">${post.username}</h5>
+                            </div>
+                            <p>${post.content}</p>
+                            <button class="btn btn-danger btn-sm delete-post" data-post-id="${post.id}" onclick="deletePost(${post.id})">
+                                <i class="fas fa-trash me-2"></i> Delete
+                            </button>
+                        </div>
+                    `;
+                });
+                document.getElementById("userPosts").innerHTML = html;
+            }
+        })
+        .catch(error => {
+            console.error('Error loading posts:', error);
+        });
+}
+
+
+        function animateOnScroll() {
+            document.querySelectorAll('.animate-on-scroll').forEach(el => {
+                if (el.getBoundingClientRect().top < window.innerHeight * 0.8) {
+                    el.classList.add('fade-in');
+                }
+            });
+        }
+
+        function openChat() {
+    fetch("/get_logged_in_user")  // Call the Flask backend to get the logged-in username
+        .then(response => response.json())
+        .then(data => {
+            if (data.username) {
+                const senderUsername = data.username;  // Logged-in user
+                const recipientUsername = document.getElementById("profileUsername").innerText;  // Profile being viewed
+                
+                window.location.href = `/chat/${senderUsername}/${recipientUsername}`;
+            } else {
+                alert("You need to log in first!"); 
+            }
+        })
+        .catch(error => console.error("Error fetching logged-in user:", error));
+}
+
+        window.addEventListener('scroll', animateOnScroll);
+        function showFollowers() {
+    const userId = window.location.pathname.split('/').pop();
+    fetch(`/followers/${userId}`)
+        .then(res => res.json())
+        .then(data => {
+            document.getElementById("followersCount").innerText = data.length; // Обновляем количество подписчиков
+            showPopup("Followers", data);
+        });
+}
+
+function showFollowed() {
+    const userId = window.location.pathname.split('/').pop();
+    fetch(`/followed/${userId}`)
+        .then(res => res.json())
+        .then(data => {
+            document.getElementById("followedCount").innerText = data.length; // Обновляем количество подписок
+            showPopup("Followed", data);
+        });
+}
+
+
+        function showPopup(title, users) {
+            const popup = document.getElementById("popup");
+            const popupTitle = document.getElementById("popupTitle");
+            const popupList = document.getElementById("popupList");
+
+            popupTitle.innerText = title;
+            popupList.innerHTML = users.length ? users.map(u => `<li>${u.username}</li>`).join('') : "<li>No users</li>";
+
+            popup.classList.remove("d-none");
+        }
+
+        function closePopup() {
+            document.getElementById("popup").classList.add("d-none");
+        }
+        load_user_posts();
+    </script>
+</body>
+</html>

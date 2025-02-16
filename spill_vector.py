@@ -3,7 +3,7 @@ import cv2
 import numpy as np
 import base64
 import matplotlib
-matplotlib.use('Agg')  # Устанавливает backend, не использующий Tkinter
+matplotlib.use('Agg')
 from matplotlib import pyplot as plt
 import io
 from PIL import Image
@@ -12,7 +12,6 @@ def predict_spread(image_filename):
     def calculate_bgr_difference(pixel1, pixel2):
         return np.abs(int(pixel1[0]) - int(pixel2[0])) + np.abs(int(pixel1[1]) - int(pixel2[1])) + np.abs(int(pixel1[2]) - int(pixel2[2]))
 
-    # Путь к изображению в папке uploads
     uploads_folder = 'static/uploads'
     image_path = os.path.join(uploads_folder, image_filename)
 
@@ -90,3 +89,5 @@ def predict_spread(image_filename):
             print("Не удалось найти ближайший чёрный пиксель.")
     else:
         print("Не удалось найти подходящую область с чёрными пикселями.")
+
+    

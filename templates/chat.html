@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Room</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.5.4/socket.io.js"></script>
+
+    <style>
+        body {
+            background: linear-gradient(to right, #4facfe, #00f2fe);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Arial', sans-serif;
+        }
+        .chat-container {
+            width: 80%;
+            height: 90vh;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        .chat-header {
+            background: #007bff;
+            color: white;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 20px;
+        }
+        .chat-header img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+        }
+        .chat-messages {
+            flex-grow: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background: #f1f1f1;
+            display: flex;
+            flex-direction: column;
+        }
+        .message {
+            padding: 12px 18px;
+            border-radius: 20px;
+            max-width: 70%;
+            word-wrap: break-word;
+            margin-bottom: 10px;
+            opacity: 0;
+            animation: fadeIn 0.3s ease-in-out forwards;
+        }
+        .message.sent {
+            align-self: flex-end;
+            background: #007bff;
+            color: white;
+        }
+        .message.received {
+            align-self: flex-start;
+            background: #e9ecef;
+            color: black;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .chat-input {
+            display: flex;
+            padding: 15px;
+            background: white;
+            border-top: 1px solid #ddd;
+        }
+        .chat-input input {
+            flex-grow: 1;
+            border: none;
+            padding: 10px;
+            border-radius: 20px;
+            outline: none;
+        }
+        .chat-input button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 50%;
+            margin-left: 10px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <button onclick="window.location.href='base.html';" style="font-size: 24px; left: 0; background-color: transparent; border: none; cursor: pointer; color: #5649ed; padding: 10px;">
+        &#10094;
+    </button>
+    <div class="chat-container">
+        <div class="chat-header">
+            <img src="{{ recipient_data.avatar }}" alt="Avatar">
+            <h3>Chat with {{ recipient_data.email }}</h3>
+        </div>
+        <div class="chat-messages" id="chatMessages"></div>
+        <div class="chat-input">
+            <input type="text" id="messageInput" placeholder="Type a message...">
+            <button onclick="sendMessage()"><i class="fas fa-paper-plane"></i></button>
+        </div>
+    </div>
+
+    <script>
+        const sender = "{{ sender }}";
+        const recipient = "{{ recipient }}";
+        const socket = io();
+
+        // Join chat room
+        socket.emit("join_chat", {recipient: sender});
+
+        function loadMessages() {
+            fetch(`/get_messages/${sender}/${recipient}`)
+                .then(response => response.json())
+                .then(messages => {
+                    const chatBox = document.getElementById("chatMessages");
+                    chatBox.innerHTML = "";
+                    messages.forEach(msg => {
+                        let messageElement = document.createElement("div");
+                        messageElement.classList.add("message", msg.sender === sender ? "sent" : "received");
+                        messageElement.textContent = msg.content;
+                        chatBox.appendChild(messageElement);
+                    });
+                    chatBox.scrollTop = chatBox.scrollHeight;
+                });
+        }
+        
+        function sendMessage() {
+            const messageInput = document.getElementById("messageInput");
+            const message = messageInput.value.trim();
+            if (!message) return;
+
+            // Append message immediately
+            const chatBox = document.getElementById("chatMessages");
+            const messageElement = document.createElement("div");
+            messageElement.classList.add("message", "sent");
+            messageElement.textContent = message;
+            chatBox.appendChild(messageElement);
+            chatBox.scrollTop = chatBox.scrollHeight; // Auto-scroll
+
+            // Send to backend
+            fetch("/send_message", {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({ sender, recipient, content: message })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    socket.emit("send_message", { sender, recipient, content: message });
+                }
+            })
+            .catch(error => console.error("Error sending message:", error));
+
+            messageInput.value = ""; // Clear input
+        }
+
+        // Handle incoming messages
+        socket.on("receive_message", function(data) {
+            if (data.sender === recipient) {
+                const chatBox = document.getElementById("chatMessages");
+                const messageElement = document.createElement("div");
+                messageElement.classList.add("message", "received");
+                messageElement.textContent = data.content;
+                chatBox.appendChild(messageElement);
+                chatBox.scrollTop = chatBox.scrollHeight;
+            }
+        });
+
+        loadMessages();
+    </script>
+</body>
+</html>

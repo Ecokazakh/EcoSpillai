@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EcoSocial - Главная</title>
+    
+    <!-- Bootstrap & Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+
+    <style>
+        :root {
+            --primary-color: #5649ed72;
+            --secondary-color: #7a6effef;
+            --gradient-bg: linear-gradient(135deg, #7a6effef 0%, #5649ed72 100%);
+        }
+        
+        body {
+            background: #f8f9fa;
+            min-height: 100vh;
+        }
+        
+        .post-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease, opacity 0.5s ease;
+        opacity: 0;
+        transform: translateY(20px);
+        }
+
+        .post-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .post-button {
+            background: var(--primary-color);
+            border: none;
+            transition: all 0.3s ease;
+        }
+
+        .post-button:hover {
+            background: var(--secondary-color);
+            transform: scale(1.05);
+        }
+
+        /* Fade-in effect */
+        .animate-on-scroll {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+
+        .animate-on-scroll.fade-in {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .nav-gradient {
+            background: var(--gradient-bg);
+        }
+
+        .search-box {
+            transition: 0.3s ease;
+        }
+
+        .search-box:focus {
+            box-shadow: 0px 0px 10px rgba(46, 204, 113, 0.5);
+        }
+        
+        .post-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: none;
+            border-radius: 15px;
+        }
+
+        .post-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+
+        .post-button {
+            background: var(--primary-color);
+            border: none;
+            transition: all 0.3s ease;
+        }
+
+        .post-button:hover {
+            background: var(--secondary-color);
+            transform: scale(1.05);
+        }
+
+        .subscribe-button {
+            transition: 0.3s ease;
+        }
+
+        .subscribe-button:hover {
+            background: #e74c3c !important;
+        }
+
+        .avatar {
+            width: 50px;
+            height: 50px;
+            object-fit: cover;
+            border-radius: 50%;
+            border: 2px solid white;
+        }
+
+        .animate-on-scroll {
+            opacity: 0;
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+
+        .fade-in {
+            opacity: 1 !important;
+            transform: translateY(0) !important;
+        }
+        /* Horizontal Navigation */
+    .top-nav {
+      position: fixed;
+      top: 0;
+      right: 500px;
+      width: 100%;
+      padding: 10px 0;
+      z-index: 1000;
+    }
+
+    .top-nav ul {
+      list-style: none;
+      display: flex;
+      justify-content: right;
+      align-items: center;
+      margin: 0;
+      padding: 0;
+    }
+
+    .top-nav li {
+      margin-left: -10px;
+      margin-top: 0px;
+    }
+
+    .nav-link {
+      display: inline-block;
+      padding: 12px 20px;
+      font-size: 20px;
+      font-weight: 600;
+      color: white;
+      text-decoration: none;
+      position: relative;
+      transition: all 0.3s ease-in-out;
+    }
+
+    .nav-link::after {
+      content: '';
+      position: absolute;
+      width: 0;
+      height: 3px;
+      display: block;
+      margin-top: 7px;
+      right: 0;
+      background: #0f4550;
+      transition: width 0.3s ease, left 0.3s ease;
+    }
+
+    .nav-link:hover::after {
+      width: 100%;
+      right: 0;
+    }
+
+    .nav-link.active {
+      text-decoration: none;
+      animation: pop 0.3s ease-in-out;
+    }
+
+    @keyframes pop {
+      0% {
+        transform: scale(1);
+      }
+      50% {
+        transform: scale(1.2);
+      }
+      100% {
+        transform: scale(1);
+      }
+    }
+
+    .nav-link:active {
+      transform: scale(0.9);
+      color: #1a2b38;
+    }
+    </style>
+</head>
+<body class="d-flex flex-column min-vh-100">
+    <nav class="top-nav">
+        <ul>
+          <li><a href="index.html" class="nav-link" id="home-link">Home</a></li>
+          <li><a href="about.html" class="nav-link" id="about-link">About Us</a></li>
+          <li><a href="problem.html" class="nav-link" id="problem-link">Problem</a></li>
+          <li><a href="solutions.html" class="nav-link" id="solutions-link">Potential Solutions</a></li>
+          <li><a href="base.html" class="nav-link" id="social-link">Social Media</a></li>
+        </ul>
+      </nav>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark nav-gradient shadow-sm">
+        <div class="container">
+            <a class="navbar-brand fw-bold" style="margin-left: 0px;">🌱 SpillSocial</a>
+            <div class="d-flex align-items-center">
+                <input type="text" id="userSearch" class="form-control me-2 search-box" placeholder="🔍 Search for users...">
+                <ul id="searchResults" class="list-group" style="position: absolute; top: 60px; z-index: 9999; width: 300px; max-height: 300px; overflow-y: auto; background-color: white; border: 1px solid #ddd; display: none;"></ul>
+                <div class="dropdown">
+                    <a class="text-white dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                        <img src="{{ user.avatar }}" class="avatar" alt="Avatar">
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><a class="dropdown-item" href="prfle.html">Profile</a></li>
+                        <li><a class="dropdown-item" href="/edit_profile">Settings</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item text-danger" href="/logout">Logout</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="container my-4 flex-grow-1">
+        <div class="row">
+            <div class="col-md-8">
+                <div class="mb-3">
+                    <textarea id="postContent" class="form-control" placeholder="What is new there?"></textarea>
+                    <button class="btn post-button mt-2 w-100" onclick="addPost()">Post</button>
+                </div>
+                <div id="postList">
+                    <!-- Posts will be loaded here -->
+                </div>
+            </div>
+            <div class="col-md-4">
+                <h5>Recomendations</h5>
+                <div id="userList">
+                    <!-- Users will be listed here -->
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Event listener for searching users
+        let searchTimeout = null;
+
+        document.getElementById("userSearch").addEventListener("input", function() {
+            clearTimeout(searchTimeout);
+            const query = this.value.trim();
+            const resultsContainer = document.getElementById("searchResults");
+
+            // Hide results if empty query
+            if (!query) {
+                resultsContainer.style.display = "none";
+                return;
+            }
+
+            // Set new timeout to wait for typing pause
+            searchTimeout = setTimeout(() => {
+                fetch(`/search?q=${query}`)
+                    .then(res => res.json())
+                    .then(users => {
+                        let html = '';
+                        if (users.length > 0) {
+                            users.forEach(user => {
+                                html += `
+                                    <li class="list-group-item d-flex justify-content-between" onclick="goToProfile(${user.id})">
+                                        ${user.username}
+                                    </li>
+                                `;
+                            });
+                            resultsContainer.innerHTML = html;
+                            resultsContainer.style.display = "block";
+                        } else {
+                            resultsContainer.style.display = "none";
+                        }
+                    });
+            }, 300); // 300ms delay after last keystroke
+        });
+
+        // Hide results when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('#userSearch')) {
+                document.getElementById("searchResults").style.display = "none";
+            }
+        });
+
+        // Go to selected profile
+        function goToProfile(userId) {
+            window.location.href = `/profile_selected/${userId}`;
+        }
+
+        // Add a post
+        // Add a post
+        function addPost() {
+            const content = document.getElementById("postContent").value.trim();
+            console.log(content);  // Debugging: Log the content to the console
+
+            if (!content) {
+                alert("Content is required!");  // If content is empty, show a message.
+                return;
+            }
+
+            fetch('/create_post', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ content })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert("Post created successfully!");
+                    loadPosts(); // Refresh the posts list
+                } else {
+                    alert("Error: " + data.message);
+                }
+            })
+            .catch(error => {
+                alert("Something went wrong. Please try again later.");
+            });
+        }
+
+
+        // Load recommended users from server
+        function loadUsers() {
+    fetch('/get_users')
+        .then(res => res.json())
+        .then(users => {
+            let html = '';
+            users.forEach(user => {
+                html += `
+                    <div class="d-flex align-items-center justify-content-between border p-2 rounded my-2">
+                        <span>${user.username}</span>
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-sm btn-primary" style="margin-right: 5px;" onclick="goToProfile('${user.id}')">View Profile</button>
+                        </div>
+                    </div>
+                `;
+            });
+            document.getElementById("userList").innerHTML = html;
+        });
+        }// Load posts from the server with animation
+        function loadPosts() {
+            fetch('/get_posts')
+                .then(res => res.json())
+                .then(posts => {
+                    let html = '';
+                    posts.forEach(post => {
+                        html += `
+                            <div class="card post-card p-3 my-3 animate-on-scroll" style="opacity: 0;">
+                                <div class="d-flex align-items-center">
+                                    <img src="${post.avatar || "static/avatars/1024px-Logo_NIS.png"}" class="avatar" alt="${post.username}">
+                                    <h5 class="ms-2">${post.username}</h5>
+                                </div>
+                                <p>${post.content}</p>
+                            </div>
+                        `;
+                    });
+                    document.getElementById("postList").innerHTML = html;
+                    animateOnScroll(); // Trigger the animation
+                })
+                .catch(error => {
+                    console.error('Error loading posts:', error);
+                });
+        }
+
+        // Scroll animation for fade-in effect
+        function animateOnScroll() {
+            document.querySelectorAll('.animate-on-scroll').forEach(el => {
+                if (el.getBoundingClientRect().top < window.innerHeight * 0.8 && !el.classList.contains('fade-in')) {
+                    el.classList.add('fade-in');
+                    el.style.opacity = 1; // Ensures fade-in is applied smoothly
+                }
+            });
+        }
+
+        // Listen for scroll events to trigger animations
+        window.addEventListener('scroll', animateOnScroll);
+        document.addEventListener("DOMContentLoaded", () => {
+            loadUsers();
+            loadPosts();
+        });
+    </script>
+</body>
+</html>
